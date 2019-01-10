@@ -4,5 +4,3 @@ pyyaml>=3.12
 sh>=1.12.14
 numpy>=1.14.0
 six>=1.11.0
-filelock==3.0.0
-tensorflow==1.12.0
