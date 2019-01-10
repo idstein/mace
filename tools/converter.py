@@ -211,6 +211,7 @@ def sha256_checksum(fname):
 def format_model_config(flags):
     with open(flags.config) as f:
         configs = yaml.load(f)
+        configs[YAMLKeyword.model_path] = os.path.dirname(flags.config)
 
     library_name = configs.get(YAMLKeyword.library_name, "")
     mace_check(len(library_name) > 0,
@@ -306,11 +307,13 @@ def format_model_config(flags):
                    ModuleName.YAML_CONFIG,
                    "'platform' must be in " + str(PlatformTypeStrs))
 
-        for key in [YAMLKeyword.model_file_path,
-                    YAMLKeyword.model_sha256_checksum]:
+        for key in [YAMLKeyword.model_file_path]:
             value = model_config.get(key, "")
             mace_check(value != "", ModuleName.YAML_CONFIG,
                        "'%s' is necessary" % key)
+
+        if not YAMLKeyword.model_sha256_checksum in model_config:
+            model_config[YAMLKeyword.model_sha256_checksum] = ""
 
         weight_file_path = model_config.get(YAMLKeyword.weight_file_path, "")
         if weight_file_path:
@@ -559,12 +562,12 @@ def download_file(url, dst, num_retries=3):
     return True
 
 
-def get_model_files(model_file_path,
+def get_model_files(model_path,
+                    model_file_path,
                     model_sha256_checksum,
                     model_output_dir,
                     weight_file_path="",
                     weight_sha256_checksum=""):
-    model_file = model_file_path
     weight_file = weight_file_path
 
     if model_file_path.startswith("http://") or \
@@ -576,8 +579,10 @@ def get_model_files(model_file_path,
             if not download_file(model_file_path, model_file):
                 MaceLogger.error(ModuleName.MODEL_CONVERTER,
                                  "Model download failed.")
+    else:
+        model_file = model_file_path if os.path.isabs(model_file_path) else os.path.join(model_path, model_file_path)
 
-    if sha256_checksum(model_file) != model_sha256_checksum:
+    if model_sha256_checksum and sha256_checksum(model_file) != model_sha256_checksum:
         MaceLogger.error(ModuleName.MODEL_CONVERTER,
                          "model file sha256checksum not match")
 
@@ -649,8 +654,9 @@ def convert_model(configs, cl_mem_type):
             model_config[YAMLKeyword.cl_mem_type] = "image"
 
         model_file_path, weight_file_path = get_model_files(
+            configs[YAMLKeyword.model_path],
             model_config[YAMLKeyword.model_file_path],
-            model_config[YAMLKeyword.model_sha256_checksum],
+            model_config[YAMLKeyword.model_sha256_checksum] if YAMLKeyword.model_sha256_checksum in model_config else None,
             BUILD_DOWNLOADS_DIR,
             model_config[YAMLKeyword.weight_file_path],
             model_config[YAMLKeyword.weight_sha256_checksum])
@@ -665,7 +671,7 @@ def convert_model(configs, cl_mem_type):
             model_config[YAMLKeyword.platform],
             model_file_path,
             weight_file_path,
-            model_config[YAMLKeyword.model_sha256_checksum],
+            model_config[YAMLKeyword.model_sha256_checksum] if YAMLKeyword.model_sha256_checksum in model_config else None,
             model_config[YAMLKeyword.weight_sha256_checksum],
             ",".join(subgraphs[0][YAMLKeyword.input_tensors]),
             ",".join(subgraphs[0][YAMLKeyword.input_data_formats]),

@@ -337,6 +337,7 @@ class YAMLKeyword(object):
     target_socs = 'target_socs'
     model_graph_format = 'model_graph_format'
     model_data_format = 'model_data_format'
+    model_path = 'model_path'
     models = 'models'
     platform = 'platform'
     device_name = 'device_name'
