@@ -2,6 +2,9 @@
 
 set -e
 
+HOST_ARCH=$(uname -a)
+HOST_OS=$(uname -s | tr '[:upper:]' '[:lower:]')
+
 LIB_DIR=builds/lib
 INCLUDE_DIR=builds/include/mace/public
 
@@ -52,11 +55,9 @@ echo "build shared lib for aarch64_linux_gnu + cpu_gpu"
 bazel build --config aarch64_linux_gnu  --config optimization mace/libmace:libmace_dynamic  --define neon=true --define openmp=true --define opencl=true --define quantize=true
 cp bazel-bin/mace/libmace/libmace.so  $LIB_DIR/aarch64_linux_gnu/cpu_gpu/
 
-if [[ "$OSTYPE" != "darwin"* ]];then
-	echo "build shared lib for linux-x86-64"
-	bazel build mace/libmace:libmace_dynamic --config optimization --define quantize=true --define openmp=true
-	cp bazel-bin/mace/libmace/libmace.so $LIB_DIR/linux-x86-64/
-fi
+echo "build shared lib for ${HOST_OS}-${HOST_ARCH}"
+bazel build mace/libmace:libmace_dynamic --config optimization --define quantize=true --define openmp=true
+cp bazel-bin/mace/libmace/libmace.so $LIB_DIR/${HOST_OS}-${HOST_ARCH}/
 
 # build static libraries
 echo "build static lib for armeabi-v7a + cpu_gpu_dsp"
@@ -80,11 +81,9 @@ echo "build static lib for aarch64_linux_gnu + cpu_gpu"
 bazel build --config aarch64_linux_gnu --config optimization mace/libmace:libmace_static --config symbol_hidden --define neon=true --define openmp=true --define opencl=true --define quantize=true
 cp bazel-genfiles/mace/libmace/libmace.a $LIB_DIR/aarch64_linux_gnu/cpu_gpu/
 
-if [[ "$OSTYPE" != "darwin"* ]];then
-	echo "build static lib for linux-x86-64"
-	bazel build mace/libmace:libmace_static --config optimization --define quantize=true --define openmp=true
-	cp bazel-genfiles/mace/libmace/libmace.a $LIB_DIR/linux-x86-64/
-fi
+echo "build static lib for ${HOST_OS}-${HOST_ARCH}"
+bazel build mace/libmace:libmace_static --config optimization --define quantize=true --define openmp=true
+cp bazel-genfiles/mace/libmace/libmace.a $LIB_DIR/${HOST_OS}-${HOST_ARCH}/
 
 echo "LIB PATH: $LIB_DIR"
 echo "INCLUDE FILE PATH: $INCLUDE_DIR"
