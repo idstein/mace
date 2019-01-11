@@ -15,7 +15,7 @@
 #include <CL/opencl.h>
 #include <dlfcn.h>
 #include <string>
-#include <vector>
+#include <list>
 
 #include "mace/utils/logging.h"
 #include "mace/core/runtime/opencl/opencl_wrapper.h"
