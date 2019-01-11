@@ -18,6 +18,7 @@
 #include <vector>
 
 #include "mace/utils/logging.h"
+#include "mace/core/runtime/opencl/opencl_wrapper.h"
 
 /**
  * Wrapper of OpenCL 2.0, based on file opencl20/CL/cl.h
@@ -32,6 +33,7 @@ class OpenCLLibrary final {
 
   bool Load();
   void *LoadFromPath(const std::string &path);
+  static const std::list<std::string> locations;
 
  public:
   static OpenCLLibrary *Get();
@@ -263,13 +265,8 @@ OpenCLLibrary::OpenCLLibrary() {
   // Besides, the library will not be load repeatedly even dlopen many times.
 }
 
-bool OpenCLLibrary::Load() {
-  if (handle_ != nullptr) {
-    return true;
-  }
-
-  // Add customized OpenCL search path here
-  const std::vector<std::string> paths = {
+// Add customized OpenCL search path here
+const OpenCLLibrary::locations = std::list<std::string>({
     "libOpenCL.so",
 #if defined(__aarch64__)
     // Qualcomm Adreno with Android
@@ -290,9 +287,18 @@ bool OpenCLLibrary::Load() {
     // Typical Linux board
     "/usr/lib/arm-linux-gnueabihf/libOpenCL.so",
 #endif
-  };
+    });
 
-  for (const auto &path : paths) {
+void addOpenCLLibraryCustomPath(const std::string &location) {
+  OpenCLLibrary::locations.push_front(location);
+}
+
+bool OpenCLLibrary::Load() {
+  if (handle_ != nullptr) {
+    return true;
+  }
+
+  for (const auto &path : OpenCLLibrary::locations) {
     VLOG(2) << "Loading OpenCL from " << path;
     void *handle = LoadFromPath(path);
     if (handle != nullptr) {
