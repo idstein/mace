@@ -33,7 +33,6 @@ class OpenCLLibrary final {
 
   bool Load();
   void *LoadFromPath(const std::string &path);
-  static const std::list<std::string> locations;
 
  public:
   static OpenCLLibrary *Get();
@@ -266,7 +265,7 @@ OpenCLLibrary::OpenCLLibrary() {
 }
 
 // Add customized OpenCL search path here
-const OpenCLLibrary::locations = std::list<std::string>({
+static std::list<std::string> locations = std::list<std::string>({
     "libOpenCL.so",
 #if defined(__aarch64__)
     // Qualcomm Adreno with Android
@@ -290,7 +289,7 @@ const OpenCLLibrary::locations = std::list<std::string>({
     });
 
 void addOpenCLLibraryCustomPath(const std::string &location) {
-  OpenCLLibrary::locations.push_front(location);
+  locations.push_front(location);
 }
 
 bool OpenCLLibrary::Load() {
@@ -298,7 +297,7 @@ bool OpenCLLibrary::Load() {
     return true;
   }
 
-  for (const auto &path : OpenCLLibrary::locations) {
+  for (const auto &path : locations) {
     VLOG(2) << "Loading OpenCL from " << path;
     void *handle = LoadFromPath(path);
     if (handle != nullptr) {
