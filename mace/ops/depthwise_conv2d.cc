@@ -24,7 +24,10 @@
 #include "mace/ops/quantization_util.h"
 // We reuse TensorFlow Lite's optimized depthwiseconv_uint8 and parallelized it
 // using OpenMP for MACE's quantized depthwise_conv2d.
-#include "tensorflow/contrib/lite/kernels/internal/optimized/depthwiseconv_uint8.h"
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#include "tensorflow/lite/kernels/internal/optimized/depthwiseconv_uint8.h"
+#pragma GCC diagnostic pop
 #endif  // MACE_ENABLE_QUANTIZE
 
 #include "mace/core/future.h"
@@ -342,12 +345,12 @@ class DepthwiseConv2dOp<DeviceType::CPU, uint8_t>
                input->dim(3));
 
     index_t out_channels = output_shape[3];
-    index_t stride_h = strides_[0];
-    index_t stride_w = strides_[1];
+    const index_t stride_h = strides_[0];
+    const index_t stride_w = strides_[1];
     index_t dilation_h = dilations_[0];
     index_t dilation_w = dilations_[1];
-    int pad_top = paddings[0] >> 1;
-    int pad_left = paddings[1] >> 1;
+    const int pad_top = paddings[0] >> 1;
+    const int pad_left = paddings[1] >> 1;
 
     Tensor::MappingGuard input_guard(input);
     Tensor::MappingGuard filter_guard(filter);
@@ -373,13 +376,40 @@ class DepthwiseConv2dOp<DeviceType::CPU, uint8_t>
           1, filter->dim(0), filter->dim(1), filter->dim(2) * filter->dim(3)};
       std::vector<index_t> bias_shape{out_channels};
 
+
+      const tflite::DepthwiseParams& params = {
+        .padding_type = tflite::PaddingType::kValid,
+        .padding_values = {
+            .width = static_cast<int16>(pad_left),
+            .height = static_cast<int16>(pad_top),
+        },
+        .stride_width = static_cast<int16>(stride_w),
+        .stride_height = static_cast<int16>(stride_h),
+        .dilation_width_factor = 1,
+        .dilation_height_factor = 1,
+        .depth_multiplier = static_cast<int16>(filter->dim(3)),
+        // uint8 inference params.
+        // TODO(b/65838351): Use smaller types if appropriate.
+        .input_offset = -input->zero_point(),
+        .weights_offset = -filter->zero_point(),
+        .output_offset = output->zero_point(),
+        .output_multiplier = quantized_multiplier,
+        .output_shift = right_shift,
+        // uint8, etc, activation params.
+        .quantized_activation_min = 0,
+        .quantized_activation_max = 255,
+        // float activation params.
+        .float_activation_min = 0.f,
+        .float_activation_max = 255.f
+      };
+
       tflite::optimized_ops::DepthwiseConv(
-          input_data, ShapeToTfliteDims(input->shape()), -input->zero_point(),
-          filter_data, ShapeToTfliteDims(filter_shape), -filter->zero_point(),
-          bias_data, ShapeToTfliteDims(bias_shape), stride_w, stride_h,
-          pad_left, pad_top, filter->dim(3), output->zero_point(),
-          quantized_multiplier, right_shift, 0, 255, output_data,
-          ShapeToTfliteDims(output->shape()));
+          params,
+          ShapeToTfliteDims(input->shape()), input_data,
+          ShapeToTfliteDims(filter_shape), filter_data,
+          ShapeToTfliteDims(bias_shape), bias_data,
+          ShapeToTfliteDims(output->shape()), output_data);
+
     } else {
       float output_multiplier =
           input->scale() * filter->scale() / output->scale();
@@ -458,19 +488,15 @@ class DepthwiseConv2dOp<DeviceType::CPU, uint8_t>
     }
   }
 
-  inline tflite::Dims<4> ShapeToTfliteDims(const std::vector<index_t> &shape) {
-    tflite::Dims<4> d;
+  inline tflite::RuntimeShape ShapeToTfliteDims(const std::vector<index_t> &shape) {
+    tflite::RuntimeShape d(4);
     for (int i = 0; i < 4; ++i) {
       int src = static_cast<int>(shape.size() - i - 1);
       if (src >= 0) {
-        d.sizes[i] = shape[src];
+        d.SetDim(i, shape[src]);
       } else {
-        d.sizes[i] = 1;
+        d.SetDim(i, 1);
       }
-    }
-    d.strides[0] = 1;
-    for (int i = 1; i < 4; i++) {
-      d.strides[i] = d.strides[i - 1] * d.sizes[i - 1];
     }
     return d;
   }

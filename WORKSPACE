@@ -83,10 +83,33 @@ http_archive(
 
 http_archive(
     name = "tflite",
-    sha256 = "c886d46ad8c91fcafed2d910ad9e7bc5aeb29856c387bdf9b6b4903cc16e6e60",
-    strip_prefix = "tensorflow-mace-ffc8cc7e8c9d1894753509e88b17e251bc6255e3",
+    sha256 = "b418c91a5d24e80d03e1d76ebdb21763051db107181d3a66fff0b2a545a60a78",
+    build_file = "//:third_party/tflite/tflite.BUILD",
+    strip_prefix = "tensorflow-dc07d3662531af7b3f049c6f3d3b010d4252df50/tensorflow/lite/kernels/internal",
     urls = [
-        "https://cnbj1.fds.api.xiaomi.com/mace/third-party/tflite/tensorflow-mace-ffc8cc7e8c9d1894753509e88b17e251bc6255e3.zip",
+        "https://github.com/tensorflow/tensorflow/archive/dc07d3662531af7b3f049c6f3d3b010d4252df50.zip",
+    ],
+)
+
+http_archive(
+    name = "tflite_kernels",
+    sha256 = "b418c91a5d24e80d03e1d76ebdb21763051db107181d3a66fff0b2a545a60a78",
+    build_file = "//:third_party/tflite/tflite_kernels.BUILD",
+    strip_prefix = "tensorflow-dc07d3662531af7b3f049c6f3d3b010d4252df50/tensorflow/lite/kernels",
+    urls = [
+        "https://github.com/tensorflow/tensorflow/archive/dc07d3662531af7b3f049c6f3d3b010d4252df50.zip",
+    ],
+)
+
+
+http_archive(
+    name = "arm_neon_2_x86_sse",
+    build_file = "//:third_party/tflite/arm_neon_2_x86_sse.BUILD",
+    sha256 = "213733991310b904b11b053ac224fee2d4e0179e46b52fe7f8735b8831e04dcc",
+    strip_prefix = "ARM_NEON_2_x86_SSE-1200fe90bb174a6224a525ee60148671a786a71f",
+    urls = [
+        "https://mirror.bazel.build/github.com/intel/ARM_NEON_2_x86_SSE/archive/1200fe90bb174a6224a525ee60148671a786a71f.tar.gz",
+        "https://github.com/intel/ARM_NEON_2_x86_SSE/archive/1200fe90bb174a6224a525ee60148671a786a71f.tar.gz",
     ],
 )
 
