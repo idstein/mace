@@ -100,6 +100,8 @@ cc_library(
     ] + if_quantize_enabled([
         "@tflite",
         "@gemmlowp",
+    ]) + if_neon_enabled([
+        "@arm_neon_2_x86_sse",
     ]),
 )
 

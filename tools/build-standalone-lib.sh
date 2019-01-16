@@ -44,6 +44,14 @@ echo "build shared lib for arm64-v8a + cpu_gpu"
 bazel build --config android --config optimization mace/libmace:libmace_dynamic --define neon=true --define openmp=true --define opencl=true --define quantize=true --cpu=arm64-v8a
 cp bazel-bin/mace/libmace/libmace.so $LIB_DIR/arm64-v8a/cpu_gpu/
 
+echo "build shared lib for x86 + cpu_gpu"
+bazel build --config android --config optimization mace/libmace:libmace_dynamic --define neon=true --define openmp=true --define opencl=true --define quantize=true --cpu=x86
+cp bazel-bin/mace/libmace/libmace.so $LIB_DIR/x86/cpu_gpu/
+
+echo "build shared lib for x86_64 + cpu_gpu"
+bazel build --config android --config optimization mace/libmace:libmace_dynamic --define neon=true --define openmp=true --define opencl=true --define quantize=true --cpu=x86_64
+cp bazel-bin/mace/libmace/libmace.so $LIB_DIR/x86_64/cpu_gpu/
+
 echo "build shared lib for arm_linux_gnueabihf + cpu_gpu"
 bazel build --config arm_linux_gnueabihf --config optimization mace/libmace:libmace_dynamic --define neon=true --define openmp=true --define opencl=true --define quantize=true
 cp bazel-bin/mace/libmace/libmace.so  $LIB_DIR/arm_linux_gnueabihf/cpu_gpu/
@@ -71,6 +79,14 @@ cp bazel-genfiles/mace/libmace/libmace.a $LIB_DIR/armeabi-v7a/cpu_gpu/
 echo "build static lib for arm64-v8a + cpu_gpu"
 bazel build --config android --config optimization mace/libmace:libmace_static --config symbol_hidden --define neon=true --define openmp=true --define opencl=true --define quantize=true --cpu=arm64-v8a
 cp bazel-genfiles/mace/libmace/libmace.a $LIB_DIR/arm64-v8a/cpu_gpu/
+
+echo "build static lib for x86 + cpu_gpu"
+bazel build --config android --config optimization mace/libmace:libmace_static --config symbol_hidden --define neon=true --define openmp=true --define opencl=true --define quantize=true --cpu=x86
+cp bazel-genfiles/mace/libmace/libmace.a $LIB_DIR/x86/cpu_gpu/
+
+echo "build static lib for x86_64 + cpu_gpu"
+bazel build --config android --config optimization mace/libmace:libmace_static --config symbol_hidden --define neon=true --define openmp=true --define opencl=true --define quantize=true --cpu=x86_64
+cp bazel-genfiles/mace/libmace/libmace.a $LIB_DIR/x86_64/cpu_gpu/
 
 echo "build static lib for arm_linux_gnueabihf + cpu_gpu"
 bazel build --config arm_linux_gnueabihf --config optimization mace/libmace:libmace_static --config symbol_hidden --define neon=true --define openmp=true --define opencl=true --define quantize=true

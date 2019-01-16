@@ -20,7 +20,7 @@
 #include "mace/core/runtime/cpu/cpu_runtime.h"
 
 #if defined(MACE_ENABLE_NEON)
-#include <arm_neon.h>
+#include "mace/ops/arm/common_neon.h"
 #endif
 
 #if defined(MACE_ENABLE_NEON) && !defined(__aarch64__)
@@ -469,7 +469,7 @@ void SGemm::RunPerBatch(const float *lhs_data,
       block_d = remain_d >> 3;
       remain_d -= (block_d << 3);
 
-#if defined(__aarch64__)
+#if defined(__aarch64__) || !defined(__arm__)
       for (index_t bd = 0; bd < block_d; ++bd) {
         // 4.8.4
         float32x4_t a0, a1, a2, a3, a4, a5, a6, a7;
@@ -505,7 +505,7 @@ void SGemm::RunPerBatch(const float *lhs_data,
         lhs_ptr += 32;
         rhs_ptr += 32;
       }
-#else  // arm v7
+#elif defined(__arm__)  // arm v7
       // 4.8.4
       if (block_d > 0) {
         asm volatile(

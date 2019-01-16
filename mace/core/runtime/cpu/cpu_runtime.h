@@ -19,7 +19,10 @@
 #include <vector>
 
 #ifdef MACE_ENABLE_QUANTIZE
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
 #include "public/gemmlowp.h"
+#pragma GCC diagnostic pop
 #endif  // MACE_ENABLE_QUANTIZE
 
 #include "mace/core/macros.h"

@@ -13,7 +13,7 @@
 // limitations under the License.
 
 #if defined(MACE_ENABLE_NEON)
-#include <arm_neon.h>
+#include "mace/ops/arm/common_neon.h"
 #endif
 
 #include "mace/ops/arm/conv_2d_neon.h"

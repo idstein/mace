@@ -16,7 +16,22 @@
 #define MACE_OPS_ARM_COMMON_NEON_H_
 
 #if defined(MACE_ENABLE_NEON)
+
+#if defined(__ARM_NEON__) || defined(__ARM_NEON)
 #include <arm_neon.h>
+#else
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wconstant-conversion"
+#define NEON2SSE_DISABLE_PERFORMANCE_WARNING
+#include "NEON_2_SSE.h"
+#pragma GCC diagnostic pop
+#endif
+
+#ifndef __aarch64__
+#define vaddvq_f32(v) ((v)[0] + (v)[1] + (v)[2] + (v)[3])
+#endif
+
 #endif
 
 namespace mace {

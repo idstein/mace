@@ -30,6 +30,10 @@
 #include "mace/ops/opencl/image/eltwise.h"
 #endif  // MACE_ENABLE_OPENCL
 
+#if defined(MACE_ENABLE_NEON)
+#include "mace/ops/arm/common_neon.h"
+#endif
+
 namespace mace {
 namespace ops {
 

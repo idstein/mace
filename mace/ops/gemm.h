@@ -15,8 +15,8 @@
 #ifndef MACE_OPS_GEMM_H_
 #define MACE_OPS_GEMM_H_
 
-#if defined(MACE_ENABLE_NEON) && defined(__aarch64__)
-#include <arm_neon.h>
+#if defined(MACE_ENABLE_NEON)
+#include "mace/ops/arm/common_neon.h"
 #endif
 
 #include "mace/core/types.h"

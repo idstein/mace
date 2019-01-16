@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if defined(MACE_ENABLE_NEON) && defined(__aarch64__)
-#include <arm_neon.h>
+#if defined(MACE_ENABLE_NEON)
+#include "mace/ops/arm/common_neon.h"
 #endif
 #include <algorithm>
 #include <functional>

@@ -32,12 +32,10 @@
  */
 
 #if defined(MACE_ENABLE_NEON)
-#include <arm_neon.h>
+#include "mace/ops/arm/common_neon.h"
 #endif
 
-#if defined(MACE_ENABLE_NEON) && !defined(__aarch64__)
-#define vaddvq_f32(v) ((v)[0] + (v)[1] + (v)[2] + (v)[3])
-#endif
+
 
 namespace mace {
 namespace ops {

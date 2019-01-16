@@ -16,7 +16,7 @@
 #define MACE_OPS_FIXPOINT_H_
 
 #if defined(MACE_ENABLE_NEON)
-#include <arm_neon.h>
+#include "mace/ops/arm/common_neon.h"
 #endif
 
 #include <algorithm>
