@@ -12,8 +12,8 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-#if defined(MACE_ENABLE_NEON) && defined(__aarch64__)
-#include <arm_neon.h>
+#if defined(MACE_ENABLE_NEON)
+#include "mace/ops/arm/common_neon.h"
 #endif
 #include <algorithm>
 #include <memory>
@@ -26,6 +26,7 @@
 // using OpenMP for MACE's quantized depthwise_conv2d.
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wunused-parameter"
+#pragma GCC diagnostic ignored "-Wconstant-conversion"
 #include "tensorflow/lite/kernels/internal/optimized/depthwiseconv_uint8.h"
 #pragma GCC diagnostic pop
 #endif  // MACE_ENABLE_QUANTIZE

@@ -15,7 +15,7 @@
 #include "mace/ops/deconv_2d.h"
 
 #if defined(MACE_ENABLE_NEON)
-#include <arm_neon.h>
+#include "mace/ops/arm/common_neon.h"
 #endif
 
 #include <algorithm>

@@ -74,10 +74,10 @@ http_archive(
 
 http_archive(
     name = "gemmlowp",
-    sha256 = "614f59c80e7e05bd14a9d1a8c0716d9aca6d393d82ffd4ca96926cb8ae4fe19a",
-    strip_prefix = "gemmlowp-2233f5e6ae1aead4f0fa951f84772737f07dd291",
+    sha256 = "b87faa7294dfcc5d678f22a59d2c01ca94ea1e2a3b488c38a95a67889ed0a658",
+    strip_prefix = "gemmlowp-38ebac7b059e84692f53e5938f97a9943c120d98",
     urls = [
-        "https://github.com/google/gemmlowp/archive/2233f5e6ae1aead4f0fa951f84772737f07dd291.zip",
+        "https://github.com/google/gemmlowp/archive/38ebac7b059e84692f53e5938f97a9943c120d98.zip",
     ],
 )
 
@@ -105,11 +105,10 @@ http_archive(
 http_archive(
     name = "arm_neon_2_x86_sse",
     build_file = "//:third_party/tflite/arm_neon_2_x86_sse.BUILD",
-    sha256 = "213733991310b904b11b053ac224fee2d4e0179e46b52fe7f8735b8831e04dcc",
-    strip_prefix = "ARM_NEON_2_x86_SSE-1200fe90bb174a6224a525ee60148671a786a71f",
+    sha256 = "28869984ca6e2338fc8fef312019fb5e857e0b852bc7a04453a78cd34dd935cb",
+    strip_prefix = "ARM_NEON_2_x86_SSE-3f5d1e42739e0cddda10f85d2368fd8c45c6884c",
     urls = [
-        "https://mirror.bazel.build/github.com/intel/ARM_NEON_2_x86_SSE/archive/1200fe90bb174a6224a525ee60148671a786a71f.tar.gz",
-        "https://github.com/intel/ARM_NEON_2_x86_SSE/archive/1200fe90bb174a6224a525ee60148671a786a71f.tar.gz",
+        "https://github.com/intel/ARM_NEON_2_x86_SSE/archive/3f5d1e42739e0cddda10f85d2368fd8c45c6884c.tar.gz",
     ],
 )
 

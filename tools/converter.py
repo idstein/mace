@@ -17,6 +17,8 @@ import glob
 import hashlib
 import os
 import re
+import shutil
+
 import sh
 import sys
 import urllib
@@ -241,23 +243,23 @@ def format_model_config(flags):
     configs[YAMLKeyword.target_socs] = \
         [soc.lower() for soc in configs[YAMLKeyword.target_socs]]
 
-    if ABIType.armeabi_v7a in target_abis \
-            or ABIType.arm64_v8a in target_abis:
-        available_socs = sh_commands.adb_get_all_socs()
-        target_socs = configs[YAMLKeyword.target_socs]
-        if ALL_SOC_TAG in target_socs:
-            mace_check(available_socs,
-                       ModuleName.YAML_CONFIG,
-                       "Android abi is listed in config file and "
-                       "build for all SOCs plugged in computer, "
-                       "But no android phone found, "
-                       "you at least plug in one phone")
-        else:
-            for soc in target_socs:
-                mace_check(soc in available_socs,
-                           ModuleName.YAML_CONFIG,
-                           "Build specified SOC library, "
-                           "you must plug in a phone using the SOC")
+    # if ABIType.armeabi_v7a in target_abis \
+    #         or ABIType.arm64_v8a in target_abis:
+    #     available_socs = sh_commands.adb_get_all_socs()
+    #     target_socs = configs[YAMLKeyword.target_socs]
+    #     if ALL_SOC_TAG in target_socs:
+    #         mace_check(available_socs,
+    #                    ModuleName.YAML_CONFIG,
+    #                    "Android abi is listed in config file and "
+    #                    "build for all SOCs plugged in computer, "
+    #                    "But no android phone found, "
+    #                    "you at least plug in one phone")
+    #     else:
+    #         for soc in target_socs:
+    #             mace_check(soc in available_socs,
+    #                        ModuleName.YAML_CONFIG,
+    #                        "Build specified SOC library, "
+    #                        "you must plug in a phone using the SOC")
 
     if flags.model_graph_format:
         model_graph_format = flags.model_graph_format
@@ -611,7 +613,7 @@ def convert_model(configs, cl_mem_type):
     if not os.path.exists(BUILD_OUTPUT_DIR):
         os.makedirs(BUILD_OUTPUT_DIR)
     elif os.path.exists(os.path.join(BUILD_OUTPUT_DIR, library_name)):
-        sh.rm("-rf", os.path.join(BUILD_OUTPUT_DIR, library_name))
+        shutil.rmtree(os.path.join(BUILD_OUTPUT_DIR, library_name))
     os.makedirs(os.path.join(BUILD_OUTPUT_DIR, library_name))
     if not os.path.exists(BUILD_DOWNLOADS_DIR):
         os.makedirs(BUILD_DOWNLOADS_DIR)
@@ -622,18 +624,18 @@ def convert_model(configs, cl_mem_type):
         '%s/%s/%s' % (BUILD_OUTPUT_DIR, library_name, MODEL_HEADER_DIR_PATH)
     # clear output dir
     if os.path.exists(model_output_dir):
-        sh.rm("-rf", model_output_dir)
+        shutil.rmtree(model_output_dir)
     os.makedirs(model_output_dir)
     if os.path.exists(model_header_dir):
-        sh.rm("-rf", model_header_dir)
+        shutil.rmtree(model_header_dir)
 
     embed_model_data = \
         configs[YAMLKeyword.model_data_format] == ModelFormat.code
 
     if os.path.exists(MODEL_CODEGEN_DIR):
-        sh.rm("-rf", MODEL_CODEGEN_DIR)
+        shutil.rmtree(MODEL_CODEGEN_DIR)
     if os.path.exists(ENGINE_CODEGEN_DIR):
-        sh.rm("-rf", ENGINE_CODEGEN_DIR)
+        shutil.rmtree(ENGINE_CODEGEN_DIR)
 
     if configs[YAMLKeyword.model_graph_format] == ModelFormat.code:
         os.makedirs(model_header_dir)
@@ -827,7 +829,7 @@ def build_mace_run(configs, target_abi, toolchain, enable_openmp,
 
     build_tmp_binary_dir = get_build_binary_dir(library_name, target_abi)
     if os.path.exists(build_tmp_binary_dir):
-        sh.rm("-rf", build_tmp_binary_dir)
+        shutil.rmtree(build_tmp_binary_dir)
     os.makedirs(build_tmp_binary_dir)
 
     symbol_hidden = True
@@ -865,7 +867,7 @@ def build_example(configs, target_abi, toolchain,
 
     build_tmp_binary_dir = get_build_binary_dir(library_name, target_abi)
     if os.path.exists(build_tmp_binary_dir):
-        sh.rm("-rf", build_tmp_binary_dir)
+        shutil.rmtree(build_tmp_binary_dir)
     os.makedirs(build_tmp_binary_dir)
 
     if cl_binary_to_code:
@@ -900,7 +902,7 @@ def build_example(configs, target_abi, toolchain,
                             symbol_hidden=symbol_hidden)
 
     if os.path.exists(LIB_CODEGEN_DIR):
-        sh.rm("-rf", LIB_CODEGEN_DIR)
+        shutil.rmtree(LIB_CODEGEN_DIR)
     sh.mkdir("-p", LIB_CODEGEN_DIR)
 
     build_arg = ""
@@ -933,7 +935,7 @@ def build_example(configs, target_abi, toolchain,
     target_bin = "/".join(sh_commands.bazel_target_to_bin(example_target))
     sh.cp("-f", target_bin, build_tmp_binary_dir)
     if os.path.exists(LIB_CODEGEN_DIR):
-        sh.rm("-rf", LIB_CODEGEN_DIR)
+        shutil.rmtree(LIB_CODEGEN_DIR)
 
 
 def print_package_summary(package_path):
@@ -1030,7 +1032,7 @@ def build_benchmark_model(configs,
     # clear tmp binary dir
     build_tmp_binary_dir = get_build_binary_dir(library_name, target_abi)
     if os.path.exists(build_tmp_binary_dir):
-        sh.rm("-rf", build_tmp_binary_dir)
+        shutil.rmtree(build_tmp_binary_dir)
     os.makedirs(build_tmp_binary_dir)
 
     target_bin = "/".join(sh_commands.bazel_target_to_bin(benchmark_target))

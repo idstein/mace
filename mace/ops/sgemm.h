@@ -19,7 +19,7 @@
 #include <utility>
 
 #if defined(MACE_ENABLE_NEON)
-#include <arm_neon.h>
+#include "mace/ops/arm/common_neon.h"
 #endif
 
 #include "mace/core/types.h"
