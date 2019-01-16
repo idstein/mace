@@ -6,7 +6,7 @@ before_install:
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export OS=darwin; else export OS=linux; fi
   - if [[ "$TRAVIS_OS_NAME" == "osx" ]]; then export PYTHONPATH="/usr/local/lib/python2.7/site-packages:$PYTHONPATH"; fi
   - sudo $PIP install pycodestyle
-  - export BAZEL_VERSION=0.13.1
+  - export BAZEL_VERSION=0.21.0
   - wget https://github.com/bazelbuild/bazel/releases/download/$BAZEL_VERSION/bazel-$BAZEL_VERSION-installer-$OS-x86_64.sh
   - chmod +x bazel-*.sh
   - sudo ./bazel-$BAZEL_VERSION-installer-$OS-x86_64.sh
